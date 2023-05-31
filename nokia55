@@ -1,13 +1,15 @@
-//declaracion de librerias----------
+// Declaracion de librerias.
+
 #include <stdio.h>
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 #include "PLL.h"
 #include "Nokia5110.h"
+#include "math.h"
 
-// Declaracion de etiquetas------------
-#define SW     GPIO_PORTF_DATA_R
 
+// Declaracion de etiquetas
+#define SW          GPIO_PORTF_DATA_R
 
 
 void GPIOB_init(void);
@@ -17,7 +19,6 @@ void GPIOF_init(void);
 void PortC_Init(void);
 unsigned long dato_entrada(unsigned long dato);
 void delay_ms(int delay);
-int calculadora (int num1, int num2, char operador);
 
 int main(void)
 {
@@ -27,141 +28,130 @@ int main(void)
 	GPIOB_init();
 	
 
-	char buffer[20];
-	PLL_Init();
-	Nokia5110_Init();
+char buffer[20];
 
-	//calculadora inicializacion
-	unsigned long entrada = 0;
-	int num1 = 0;
-	int num2 = 0;
-	char operador;
-	int resultado = 0;
+PLL_Init();
+Nokia5110_Init();
+Nokia5110_SetCursor(0,0);
+Nokia5110_OutString("Uni Boyaca");
+Nokia5110_SetCursor(0,2);
+Nokia5110_OutString("++++2023++++");
+Nokia5110_Clear();
+
+unsigned long entrada = 0;
 
 while(1)
 {
 	entrada = dato_entrada(entrada);
-
+     
 }
 
 }
-int calculadora(int num1 , int num2, char operador){
-	switch (operador){
-	
-		case '+':
-			return num1+num2;
-		case '-':
-			return num1-num2;
-		case '*':
-			return num1*num2;
-		case '/':
-			if (num2 != 0){
-				return num1/num2;
-			}
-			else {
-				return 0;
-			}
-		default:
-				return 0;
-	}
-}
-	
 unsigned long dato_entrada(unsigned long dato)
 {
  
 	unsigned long entrada;
 	unsigned long salida;
+	unsigned long  num;
 		
 	GPIO_PORTD_DATA_R = 0x0E;
 	delay_ms(50);
 
 	entrada = GPIO_PORTC_DATA_R; 
 	salida = GPIO_PORTD_DATA_R;
-//primera columna
 	
  if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x01;
-		Nokia5110_OutString("1");
+	 Nokia5110_OutString("1");
+	 num = 1;
+	 
+
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x04;
-	 Nokia5110_OutString("4");
+	  Nokia5110_OutString("4");
+	  num = 4;
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x07;
-	 Nokia5110_OutString("7");
+	  Nokia5110_OutString("7");
+	  num = 7;
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0E;
-	 Nokia5110_OutString("*");
+	  Nokia5110_OutString("*");
+	  num='*';
+
  }
-	//segunda  columna
- 
- GPIO_PORTD_DATA_R = 0x0D;
+	GPIO_PORTD_DATA_R = 0x0D;
 	delay_ms(50);
- 
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x02;
-		Nokia5110_OutString("2");
+		 Nokia5110_OutString("2");
+		 num=2;
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x05;
-	 Nokia5110_OutString("5");
+	  Nokia5110_OutString("5");
+	  num=5;
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x08;
-	 Nokia5110_OutString("8");
+	  Nokia5110_OutString("8");
+	  num=8;
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x15;
-	 Nokia5110_OutString("0");
+	 GPIO_PORTB_DATA_R = 0x10;
+	  Nokia5110_OutString("0");
+	  num=0;
  }
- 
-//tercera columna
- 
  GPIO_PORTD_DATA_R = 0x0B;
 	delay_ms(50);
- 
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x03;
 		Nokia5110_OutString("3");
+		num=3;
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x06;
 	 Nokia5110_OutString("6");
+	 num=6;
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x09;
 	 Nokia5110_OutString("9");
+	 num=9;
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x10;
-	 Nokia5110_OutString("#");
+	 Nokia5110_OutString('#');
+	 num='#';
  }
-//cuarta columna
  GPIO_PORTD_DATA_R = 0x07;
 	delay_ms(50);
- 
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x11;
-		Nokia5110_OutString("+");
+	 GPIO_PORTB_DATA_R = 0x0B;
+		Nokia5110_OutString("A");
+		num='A';
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x12;
-	 Nokia5110_OutString("-");
+	 GPIO_PORTB_DATA_R = 0x0C;
+	 Nokia5110_OutString("B");
+	  num='B';
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x13;
-	 Nokia5110_OutString("*");
+	 GPIO_PORTB_DATA_R = 0x0D;
+	 Nokia5110_OutString("C");
+	 num='C';
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x14;
-	 Nokia5110_OutString("/");
+	 GPIO_PORTB_DATA_R = 0x0E;
+	 Nokia5110_OutString("D");
+	 num='D';
  }
-
+    return num;
 
 }
-
 void GPIOB_init(void)
 {
 int delay;
