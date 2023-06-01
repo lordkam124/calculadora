@@ -16,13 +16,11 @@ void GPIOD_init(void);
 void GPIOE_init(void);
 void GPIOF_init(void);
 void PortC_Init(void);
-int dato_entrada(int dato);
-int dato_entrada2(int dato2);
-int contador_estado(unsigned long entrada);	
-int contador_estado2(unsigned long entrada2);
-unsigned char data_caracter(unsigned long data);
-unsigned char enter_bot(unsigned long valor);
-int calculadora(int num1, int num2,unsigned char operador);
+int dato_entrada(unsigned long dato);
+int  dato_entrada2(int num);
+int  dato_entrada3(int num2);
+char caracter(unsigned long data);
+int calculadora(int N1,int N2,char po);
 void delay_ms(int delay);
 
 int main(void)
@@ -31,10 +29,6 @@ int main(void)
 	PortC_Init();
 	GPIOD_init();
 	GPIOB_init();
-	
-
-char buffer[20];
-
 PLL_Init();
 Nokia5110_Init();
 Nokia5110_SetCursor(0,0);
@@ -43,321 +37,408 @@ Nokia5110_SetCursor(0,2);
 Nokia5110_OutString("++++2023++++");
 Nokia5110_Clear();
 
-int  entrada = 0;
-int  entrada2 = 0;
-unsigned char  caracter =0;
-unsigned char enter =0 ;
-int resultado =0;
-
+unsigned long entrada=0;
+unsigned long car=0;
+int R3=0;
+int R2=0;
+int R=0;
+int t3=0;
+int t2=0;
+int t=0;
+int n1=0;
+int n2=0;
+char oper=0;
+int sal=0;
+char buffer[20];
 
 while(1)
-{ 
-	enter = enter_bot(enter);
-	Nokia5110_SetCursor(0,0);
-	Nokia5110_OutString("*calcualdora");
-	Nokia5110_SetCursor(0,1);
-	Nokia5110_OutString("n1:");
-	entrada = dato_entrada(entrada);
-	delay_ms(50);
-			Nokia5110_SetCursor(6,1);
-	Nokia5110_OutString("n2:");
-	entrada2 = dato_entrada2(entrada2);
-	delay_ms(50);
-			Nokia5110_SetCursor(0,2);
-	Nokia5110_OutString("operador:");
-	caracter =data_caracter(caracter);
-	delay_ms(50);
-	Nokia5110_SetCursor(0,3);
-	Nokia5110_OutString("=");
-	resultado=calculadora(entrada,entrada2,caracter);
-	sprintf(buffer,"%d",resultado);
-	Nokia5110_OutString(buffer);
-	delay_ms(50);
-	if(enter=='*')
-	{	
-	Nokia5110_Clear()	;
+{
+	START:
+	R = dato_entrada(entrada);
+	if(R!=0){
+		op:
+	R2=dato_entrada2(R);
+		if(R2!=0){
+			op2:
+			R3=dato_entrada3(R2);	
+			n1=R3;
+			if(n1!=0){
+				op3:
+			oper=caracter(car);
+			if((oper=='A')||(oper=='B')||(oper=='C')||(oper=='D')){
+				op4:
+				t = dato_entrada(entrada);
+				if(t!=0){
+					op5:
+				t2=dato_entrada2(t);
+					if(t2!=0){
+						t3=dato_entrada3(t2);	
+						n2=t3;
+						sal=calculadora(n1,n2,oper);
+						sprintf(buffer,"%d",sal);
+						Nokia5110_OutString(buffer);
+						delay_ms(500);
+						goto START;
+						
+						
+					}
+					else{
+					goto op5;
+					}
+				}
+				else{
+				goto op4;
+				}
+			}
+			else{
+				goto op3;
+			}
+			}
+			else{
+			goto op2;
+			}
+		}
+		else{
+			goto op;
+		}
 	}
-	
+	else{
+	goto START;
+	}
+
 }
 
 }
- int   calculadora(int num1, int num2,unsigned char operador){
-	 int  resultado =0;
-	 if(operador=='+'){
-		 resultado= (num1+num2);
-		 
-	 }
-	 else if(operador=='-'){
-		 resultado= (num1-num2);
-		 
-	 }
-	 else if(operador=='x'){
-		 resultado= (num1*num2);
-		 
-	 }
-	 else if(operador=='/'){
-		 resultado= (num1/num2);
-		 
-	 }
-	 return resultado;
+int calculadora(int N1,int N2,char po){
+	int resultado;
+	if(po=='A'){
+		resultado=(N1+N2);
+	}
+	else if(po=='B'){
+		resultado=(N1-N2);
+	}
+	else if(po=='C'){
+		resultado=(N1*N2);
+	}
+	else if(po=='D'){
+		resultado=(N1/N2);
+	}
+	return resultado;
+
+}
+char caracter(unsigned long data)
+{
  
- }
-unsigned char enter_bot(unsigned long valor){
-	unsigned long entrada;
-	unsigned long salida;
-	 char c =0;
-GPIO_PORTD_DATA_R = 0x0E;
+	unsigned long entradaC;
+	unsigned long salidaC;
+	char cs[20];
+	char c;
+		
+	GPIO_PORTD_DATA_R = 0x0E;
 	delay_ms(50);
 
-	entrada = GPIO_PORTC_DATA_R; 
-	salida = GPIO_PORTD_DATA_R;
-	
- 
+	entradaC = GPIO_PORTC_DATA_R; 
+	salidaC = GPIO_PORTD_DATA_R;
+		
  if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0E;
 	 c='*';
-
-	 
+		 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }
-	return c;
-}
-unsigned char data_caracter(unsigned long data){
-unsigned long entrada;
-	unsigned long salida;
-	 char c =0;
-	 char carater[20];
-
-	entrada = GPIO_PORTC_DATA_R; 
-	salida = GPIO_PORTD_DATA_R;
-		
+ 
  GPIO_PORTD_DATA_R = 0x0B;
 	delay_ms(50);
-	
+		 
  if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x10;
-	  c='=';
-
-	 sprintf(carater,"%c",c);
-	  Nokia5110_OutString(carater);
+	 c='#';
+	 	 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }
  GPIO_PORTD_DATA_R = 0x07;
 	delay_ms(50);
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0B;
-		 c='+';
-
-	 sprintf(carater,"%c",c);
-	  Nokia5110_OutString(carater);
+	c='A';
+			 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0C;
-	  c='-';
-
-	 sprintf(carater,"%c",c);
-	  Nokia5110_OutString(carater);
+	 c='B';
+	 	 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0D;
-	  c='x';
-
-	 sprintf(carater,"%c",c);
-	  Nokia5110_OutString(carater);
+	 c='C';
+	 	 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x0E;
-	 c='/';
-
-	 sprintf(carater,"%c",c);
-	  Nokia5110_OutString(carater);
+	 c='D';
+	 	 sprintf(cs,"%c",c);
+			Nokia5110_OutString(cs);
  }
- return c;
-  
+return c;
+
 }
-int dato_entrada(int  dato)
+
+int  dato_entrada3(int num2){
+unsigned long entradae;
+	unsigned long salidae;
+	char numN3[4];
+	int num3;
+	 GPIO_PORTD_DATA_R= 0x0E;
+	delay_ms(50);
+	entradae = GPIO_PORTC_DATA_R; 
+	salidae = GPIO_PORTD_DATA_R;
+	
+ if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x01;
+	 num3=(num2*10)+1;
+		Nokia5110_Clear();
+	 Nokia5110_OutUDec(num3);
+	
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x04;
+	  num3=(num2*10)+4;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x07;
+	  num3=(num2*10)+7;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	 
+
+	GPIO_PORTD_DATA_R = 0x0D;
+	delay_ms(50);
+	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x02;
+		num3=(num2*10)+2;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x05;
+	 num3=(num2*10)+5;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x08;
+	  num3=(num2*10)+8;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	 
+ else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x10;
+	num3=(num2*10)+0;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }
+ GPIO_PORTD_DATA_R = 0x0B;
+	delay_ms(50);
+	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x03;
+	num3=(num2*10)+3;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x06;
+	 num3=(num2*10)+6;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x09;
+	num3=(num2*10)+9;
+	 sprintf(numN3,"%d",num3);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN3);
+ }
+return num3; 
+}
+int  dato_entrada2(int num){
+unsigned long entradat;
+	unsigned long salidat;
+	char numN2[3];
+	int numt2;
+	 GPIO_PORTD_DATA_R= 0x0E;
+	delay_ms(50);
+	entradat = GPIO_PORTC_DATA_R; 
+	salidat = GPIO_PORTD_DATA_R;
+	
+ if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x01;
+	 numt2=(num*10)+1;
+		Nokia5110_Clear();
+	 Nokia5110_OutUDec(numt2);
+	
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x04;
+	  numt2=(num*10)+4;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x07;
+	  numt2=(num*10)+7;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	 
+
+	GPIO_PORTD_DATA_R = 0x0D;
+	delay_ms(50);
+	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x02;
+		numt2=(num*10)+2;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x05;
+	 numt2=(num*10)+5;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x08;
+	  numt2=(num*10)+8;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	 
+ else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x10;
+	numt2=(num*10)+0;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }
+ GPIO_PORTD_DATA_R = 0x0B;
+	delay_ms(50);
+	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x03;
+	numt2=(num*10)+3;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x06;
+	 numt2=(num*10)+6;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }	
+ else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
+	 GPIO_PORTB_DATA_R = 0x09;
+	numt2=(num*10)+9;
+	 sprintf(numN2,"%d",numt2);
+		Nokia5110_Clear();
+	 Nokia5110_OutString(numN2);
+ }
+return numt2; 
+}
+int  dato_entrada(unsigned long dato)
 {
  
-	unsigned long entrada;
-	unsigned long salida;
+	unsigned long entrada1;
+	unsigned long salida1;
 	int num;
-	char numt[1];
-	GPIO_PORTD_DATA_R = 0x0E;
+	char numN[2];
+	 GPIO_PORTD_DATA_R= 0x0E;
 	delay_ms(50);
-
-	entrada = GPIO_PORTC_DATA_R; 
-	salida = GPIO_PORTD_DATA_R;
+	entrada1 = GPIO_PORTC_DATA_R; 
+	salida1 = GPIO_PORTD_DATA_R;
 	
  if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x01;
-	  num = 1;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	 num=1;
+	 Nokia5110_OutUDec(num);
+	
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x04;
-	 
-	 num = 4;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	  num=4;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x07;
-	 num = 7;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	  num=7;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	 
+
 	GPIO_PORTD_DATA_R = 0x0D;
 	delay_ms(50);
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x02;
-		num = 2;
-		sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
-		
+		num=2;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x05;
-	 num = 5;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	 num=5;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x08;
-	  Nokia5110_OutString("8");
-	 num = 8;
+	  num=8;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	 
  else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x10;
-	 num = 0;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	 num=0;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }
  GPIO_PORTD_DATA_R = 0x0B;
 	delay_ms(50);
 	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x03;
-		num = 3;
-		sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	num=3;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	
  else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x06;
-	 num = 6;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
+	 num=6;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
  }	
  else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
 	 GPIO_PORTB_DATA_R = 0x09;
-	 num = 9;
-	 sprintf(numt,"%d",num);
-	  Nokia5110_OutString(numt);
- }	
-	
-	
-
+	num=9;
+	 sprintf(numN,"%d",num);
+	 Nokia5110_OutString(numN);
+ }	 
 return num;
-		
-
-} 
-int  dato_entrada2(int dato2)
-{
- 
-	unsigned long entrada;
-	unsigned long salida;
-	int num2;
-	char numt[1];
-		
-	GPIO_PORTD_DATA_R = 0x0E;
-	delay_ms(50);
-
-	entrada = GPIO_PORTC_DATA_R; 
-	salida = GPIO_PORTD_DATA_R;
-	
- if((GPIO_PORTC_DATA_R&0x10)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x01;
-	  num2 = 1;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x04;
-	 num2 = 4;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x07;
-	 num2 = 7;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	 
-	GPIO_PORTD_DATA_R = 0x0D;
-	delay_ms(50);
-	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x02;
-		num2 = 2;
-		sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x05;
-	 num2 = 5;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x08;
-	 num2 = 8;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	 
- else if((GPIO_PORTC_DATA_R&0x80)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x10;
-	 num2 = 0;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }
- GPIO_PORTD_DATA_R = 0x0B;
-	delay_ms(50);
-	if((GPIO_PORTC_DATA_R&0x10)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x03;
-		num2 = 3;
-		sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x20)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x06;
-	 num2 = 6;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	
- else if((GPIO_PORTC_DATA_R&0x40)== 0x00){
-	 GPIO_PORTB_DATA_R = 0x09;
-	 num2 = 9;
-	 sprintf(numt,"%d",num2);
-	  Nokia5110_OutString(numt);
- }	 
-
-return num2;
-
 }
-
-
-unsigned long dato_entrada(unsigned long dato)
-{
-	unsigned long salida;
-    unsigned long entrada;
-
-	if (entrada !=0x00)
-	{
-		salida=entrada;
-	}else
-	{
-		salida 
-	}
-	
-	
-}
-
 void GPIOB_init(void)
 {
 int delay;
@@ -540,4 +621,4 @@ for(int i=0;i < delay; i++)
 for(int j=0;j < 5333; j++)
 {}
 }
-} 
+}
