@@ -340,6 +340,24 @@ int  dato_entrada2(int dato2)
 return num2;
 
 }
+
+
+unsigned long dato_entrada(unsigned long dato)
+{
+	unsigned long salida;
+    unsigned long entrada;
+
+	if (entrada !=0x00)
+	{
+		salida=entrada;
+	}else
+	{
+		salida 
+	}
+	
+	
+}
+
 void GPIOB_init(void)
 {
 int delay;
